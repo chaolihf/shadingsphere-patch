@@ -32,7 +32,11 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
  */
 public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQLReceivedPacket {
     
-    private final String sql;
+	private String sql;
+    
+    public void setSQL(String sql) {
+    	this.sql=sql;
+    }
     
     @Getter
     private final HintValueContext hintValueContext;
