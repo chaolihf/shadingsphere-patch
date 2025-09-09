@@ -32,6 +32,9 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
  */
 public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQLReceivedPacket {
     
+	/**
+	 * 增加设置方法并修改sql字段类型
+	 */
 	private String sql;
     
     public void setSQL(String sql) {
