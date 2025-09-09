@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query;
+package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare;
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
@@ -26,14 +26,14 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
 /**
- * COM_QUERY command packet for MySQL.
- *
- * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_query.html">COM_QUERY</a>
+ * COM_STMT_PREPARE command packet for MySQL.
+ * 
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_stmt_prepare.html">COM_STMT_PREPARE</a>
  */
-public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQLReceivedPacket {
+public final class MySQLComStmtPreparePacket extends MySQLCommandPacket implements SQLReceivedPacket {
     
 	/**
-	 * 增加设置方法并修改sql字段类型，去除sql的final  
+	 * 增加设置方法并修改sql字段类型，去除sql的final
 	 */
 	private String sql;
     
@@ -44,14 +44,8 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket implements SQL
     @Getter
     private final HintValueContext hintValueContext;
     
-    public MySQLComQueryPacket(final String sql) {
-        super(MySQLCommandPacketType.COM_QUERY);
-        hintValueContext = SQLHintUtils.extractHint(sql);
-        this.sql = SQLHintUtils.removeHint(sql);
-    }
-    
-    public MySQLComQueryPacket(final MySQLPacketPayload payload) {
-        super(MySQLCommandPacketType.COM_QUERY);
+    public MySQLComStmtPreparePacket(final MySQLPacketPayload payload) {
+        super(MySQLCommandPacketType.COM_STMT_PREPARE);
         String originSQL = payload.readStringEOF();
         hintValueContext = SQLHintUtils.extractHint(originSQL);
         sql = SQLHintUtils.removeHint(originSQL);
