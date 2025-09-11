@@ -62,11 +62,11 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         SQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getUsedDatabaseName());
-        String sql = packet.getSQL();
         /**
          * 增加修改环节
          */
-        packet.setSQL(PostgreSQLViewRewriter.rewriteSql(connectionSession, packet.getSQL()));
+        String sql=PostgreSQLViewRewriter.rewriteSql(connectionSession, packet.getSQL());
+        packet.setSQL(sql);
         
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
         String escapedSql = escape(sqlStatement, sql);
