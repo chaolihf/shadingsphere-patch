@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
-import lombok.Getter;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
@@ -43,11 +46,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
-import com.chinatelecom.udp.component.shardingsphere.SQLViewRewrite;
+import com.chinatelecom.udp.component.shardingsphere.MySQLViewRewriter;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.Getter;
 
 /**
  * COM_QUERY command packet executor for MySQL.
@@ -68,7 +69,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         /**
          * 增加修改环节
          */
-        packet.setSQL(SQLViewRewrite.rewriteSql(connectionSession, packet.getSQL()));
+        packet.setSQL(MySQLViewRewriter.rewriteSql(connectionSession, packet.getSQL()));
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
         proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSQL()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSQL())
