@@ -64,6 +64,13 @@ public/
 !/proxy/frontend/type/mysql/src/main/java/org/apache/shardingsphere/proxy/frontend/mysql/command/query/text/query/MySQLComQueryPacketExecutor.java
 !/proxy/frontend/type/postgresql/src/main/java/org/apache/shardingsphere/proxy/frontend/postgresql/command/query/extended/parse/PostgreSQLComParseExecutor.java
 !db-protocol/postgresql/src/main/java/org/apache/shardingsphere/db/protocol/postgresql/packet/command/query/extended/parse/PostgreSQLComParsePacket.java
+!/kernel/authority/distsql/parser/src/main/antlr4/imports/authority/RALStatement.g4
+!/kernel/authority/distsql/parser/src/main/antlr4/imports/authority/Keyword.g4
+!/kernel/authority/distsql/parser/src/main/antlr4/org/apache/shardingsphere/distsql/parser/autogen/AuthorityDistSQLStatement.g4
+!/kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authority/distsql/parser/core/AuthorityDistSQLStatementVisitor.java
+!/kernel/authority/distsql/statement/src/main/java/org/apache/shardingsphere/authority/distsql/statement/ShowAuthorityRuleStatement.java
+!/kernel/authority/distsql/handler/src/main/resources/META-INF/services/org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor
+
 
 
 .github/
@@ -75,7 +82,6 @@ agent/*
 /features/*
 /infra/*
 /jdbc/*
-/kernel/*
 /mode/*
 /parser/*
 /src/*
@@ -88,6 +94,15 @@ LICENSE
 NOTICE
 *.xml
 *.yml
+/kernel/data-pipeline
+/kernel/global-clock
+/kernel/logging
+/kernel/s*
+/kernel/t*
+/kernel/authority/api
+/kernel/authority/core
+/kernel/authority/provider
+
 /proxy/bootstrap
 /proxy/backend
 /proxy/frontend/core
@@ -97,7 +112,9 @@ NOTICE
 /db-protocol/core
 /db-protocol/opengauss
 **/test
-**/resources
+/db-protocol/**/resources
+/proxy/**/resources
+/kernel/authority/distsql/parser/src/main/resources
 db-protocol/mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/codec/
 db-protocol/mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/constant
 db-protocol/mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/netty
@@ -289,3 +306,10 @@ proxy/frontend/type/mysql/src/main/java/org/apache/shardingsphere/proxy/frontend
 proxy/frontend/type/mysql/src/main/java/org/apache/shardingsphere/proxy/frontend/mysql/MySQLFrontendEngine.java
 proxy/frontend/type/postgresql/src/main/java/org/apache/shardingsphere/proxy/frontend/postgresql/PostgreSQLFrontendEngine.java
 .gitattributes
+kernel/authority/distsql/parser/src/main/antlr4/imports/authority/Alphabet.g4
+kernel/authority/distsql/parser/src/main/antlr4/imports/authority/Symbol.g4
+kernel/authority/distsql/handler/src/main/java/org/apache/shardingsphere/authority/distsql/handler/query/ShowAuthorityRuleExecutor.java
+kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authority/distsql/parser/core/AuthorityDistSQLLexer.java
+kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authority/distsql/parser/core/AuthorityDistSQLParser.java
+kernel/authority/distsql/statement/src/main/java/org/apache/shardingsphere/authority/distsql/statement/ShowAuthorityRuleStatement.java
+kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authority/distsql/parser/facade/AuthorityDistSQLParserFacade.java
