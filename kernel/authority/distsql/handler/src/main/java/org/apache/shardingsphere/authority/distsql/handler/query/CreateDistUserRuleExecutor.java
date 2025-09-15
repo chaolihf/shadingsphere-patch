@@ -17,51 +17,48 @@
 
 package org.apache.shardingsphere.authority.distsql.handler.query;
 
-import lombok.Setter;
-
 import org.apache.shardingsphere.authority.distsql.statement.CreateDistUserRuleStatement;
-import org.apache.shardingsphere.authority.distsql.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import lombok.Setter;
 
 /**
  * Show authority rule executor.
  */
 @Setter
-public final class CreateDistUserRuleExecutor implements DistSQLQueryExecutor<CreateDistUserRuleStatement>, DistSQLExecutorRuleAware<AuthorityRule> {
-    
-    private AuthorityRule rule;
+public final class CreateDistUserRuleExecutor implements DatabaseRuleCreateExecutor<CreateDistUserRuleStatement, ShardingRule, ShardingRuleConfiguration> {
     
     @Override
-    public Collection<String> getColumnNames(final CreateDistUserRuleStatement sqlStatement) {
-        return Arrays.asList("users", "provider", "props");
-    }
-    
-    @Override
-    public Collection<LocalDataQueryResultRow> getRows(final CreateDistUserRuleStatement sqlStatement, final ContextManager contextManager) {
-        String grantees = rule.getGrantees().stream().map(Grantee::toString).collect(Collectors.joining("; "));
-        String provider = rule.getConfiguration().getPrivilegeProvider().getType();
-        Properties props = rule.getConfiguration().getPrivilegeProvider().getProps();
-        return Collections.singleton(new LocalDataQueryResultRow(grantees, provider, props));
-    }
-    
-    @Override
-    public Class<AuthorityRule> getRuleClass() {
-        return AuthorityRule.class;
+    public Class<ShardingRule> getRuleClass() {
+        return ShardingRule.class;
     }
     
     @Override
     public Class<CreateDistUserRuleStatement> getType() {
         return CreateDistUserRuleStatement.class;
     }
+
+	@Override
+	public void checkBeforeUpdate(CreateDistUserRuleStatement sqlStatement) {
+		
+	}
+
+	@Override
+	public void setDatabase(ShardingSphereDatabase database) {
+		
+	}
+
+	@Override
+	public void setRule(ShardingRule rule) {
+	}
+
+	@Override
+	public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(CreateDistUserRuleStatement sqlStatement) {
+		ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+		return result;
+	}
 }

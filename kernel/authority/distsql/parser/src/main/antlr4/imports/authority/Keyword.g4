@@ -17,7 +17,7 @@
 
 lexer grammar Keyword;
 
-import Alphabet;
+import Alphabet,Symbol;
 
 WS
     : [ \t\r\n] + ->skip
@@ -35,6 +35,27 @@ AUTHORITY
     : A U T H O R I T Y
     ;
 
+CREATE
+    : C R E A T E
+    ;
+
+USER
+    : U S E R
+    ;
+
+IDENTIFIED
+    : I D E N T I F I E D
+    ;
+    
+BY
+    : B Y
+    ;
+    
+
+DIST
+	: D I S T
+	;
+	
 IDENTIFIER_
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
     | BQ_ ~'`'+ BQ_

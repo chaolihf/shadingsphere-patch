@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 grammar RALStatement;
 
 import Keyword;
@@ -32,5 +31,5 @@ password
     ;
 
 createDistUserRule
-    : CREATE USER userName IDENTIFIED BY password
+    : CREATE DIST USER userName IDENTIFIED BY password
     ;

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.authority.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
+import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.CreateRuleStatement;
 
 /**
  * 创建分布式库用户的规则
  */
-public final class CreateDistUserRuleStatement extends ShowGlobalRulesStatement {
+public final class CreateDistUserRuleStatement extends CreateRuleStatement {
 	
 	public String username;
 	

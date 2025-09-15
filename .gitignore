@@ -68,8 +68,7 @@ public/
 !/kernel/authority/distsql/parser/src/main/antlr4/imports/authority/Keyword.g4
 !/kernel/authority/distsql/parser/src/main/antlr4/org/apache/shardingsphere/distsql/parser/autogen/AuthorityDistSQLStatement.g4
 !/kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authority/distsql/parser/core/AuthorityDistSQLStatementVisitor.java
-!/kernel/authority/distsql/statement/src/main/java/org/apache/shardingsphere/authority/distsql/statement/ShowAuthorityRuleStatement.java
-!/kernel/authority/distsql/handler/src/main/resources/META-INF/services/org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor
+
 
 
 
@@ -92,8 +91,11 @@ mvnw*
 LICENSE
 *.config
 NOTICE
-*.xml
 *.yml
+**/test
+.antlr
+/pom.xml
+/kernel/pom.xml
 /kernel/data-pipeline
 /kernel/global-clock
 /kernel/logging
@@ -102,19 +104,24 @@ NOTICE
 /kernel/authority/api
 /kernel/authority/core
 /kernel/authority/provider
+/kernel/authority/distsql/parser/src/main/resources
+/kernel/authority/pom.xml
+/kernel/authority/distsql/pom.xml
+/kernel/authority/distsql/parser/pom.xml
+/kernel/authority/distsql/statement/pom.xml
 
 /proxy/bootstrap
 /proxy/backend
 /proxy/frontend/core
 /proxy/frontend/spi
 /proxy/frontend/type/opengauss
+/proxy/**/*.xml
+/proxy/**/resources
 
+/db-protocol/**/resources
+/db-protocol/**/*.xml
 /db-protocol/core
 /db-protocol/opengauss
-**/test
-/db-protocol/**/resources
-/proxy/**/resources
-/kernel/authority/distsql/parser/src/main/resources
 db-protocol/mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/codec/
 db-protocol/mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/constant
 db-protocol/mysql/src/main/java/org/apache/shardingsphere/db/protocol/mysql/netty
@@ -313,3 +320,4 @@ kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authorit
 kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authority/distsql/parser/core/AuthorityDistSQLParser.java
 kernel/authority/distsql/statement/src/main/java/org/apache/shardingsphere/authority/distsql/statement/ShowAuthorityRuleStatement.java
 kernel/authority/distsql/parser/src/main/java/org/apache/shardingsphere/authority/distsql/parser/facade/AuthorityDistSQLParserFacade.java
+kernel/authority/distsql/handler/src/main/resources/META-INF/services/org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor
