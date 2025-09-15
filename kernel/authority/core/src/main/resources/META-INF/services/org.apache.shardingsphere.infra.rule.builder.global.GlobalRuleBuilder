@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder
-org.apache.shardingsphere.authority.rule.builder.DistUserRuleBuilder

@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.authority.distsql.handler.query;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.distsql.statement.CreateDistUserRuleStatement;
-import org.apache.shardingsphere.authority.rule.DistUserRule;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
@@ -29,25 +34,30 @@ import lombok.Setter;
  * 创建分布式用户规则执行器
  */
 @Setter
-public final class CreateDistUserRuleExecutor implements GlobalRuleDefinitionExecutor<CreateDistUserRuleStatement, DistUserRule>{
+public final class CreateDistUserRuleExecutor implements GlobalRuleDefinitionExecutor<CreateDistUserRuleStatement, AuthorityRule>{
+
+	private AuthorityRule rule;
 
 	@Override
-	public void setRule(DistUserRule rule) {
-		// TODO Auto-generated method stub
-		
+	public void setRule(AuthorityRule rule) {
+		this.rule=rule;
 	}
 
 	@Override
-	public Class<DistUserRule> getRuleClass() {
-		return DistUserRule.class;
+	public Class<AuthorityRule> getRuleClass() {
+		return AuthorityRule.class;
 	}
 
 	@Override
 	public RuleConfiguration buildToBeAlteredRuleConfiguration(CreateDistUserRuleStatement sqlStatement) {
-		UserConfiguration userInfo=new UserConfiguration(
-				sqlStatement.getUsername(),sqlStatement.getPassword(),null,null,false
+		AuthorityRuleConfiguration currentConfig = rule.getConfiguration();
+		List<UserConfiguration> currentUsers = new ArrayList<>(currentConfig.getUsers());
+		currentUsers.add(new UserConfiguration(sqlStatement.getUsername(),sqlStatement.getPassword(),"","",false));
+		AuthorityRuleConfiguration config=new AuthorityRuleConfiguration(
+				currentUsers,currentConfig.getPrivilegeProvider(),
+					currentConfig.getAuthenticators(),currentConfig.getDefaultAuthenticator()
 				);
-		return userInfo;
+		return config;
 	}
 
 	@Override

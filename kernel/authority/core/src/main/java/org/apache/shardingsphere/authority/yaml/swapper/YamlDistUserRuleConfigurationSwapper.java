@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.config.UserConfiguration;
+import org.apache.shardingsphere.authority.constant.DistUserOrder;
 import org.apache.shardingsphere.authority.yaml.config.YamlDistUserRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
@@ -48,6 +49,6 @@ public final class YamlDistUserRuleConfigurationSwapper implements YamlRuleConfi
     
     @Override
     public int getOrder() {
-        return 6000;
+        return DistUserOrder.ORDER;
     }
 }

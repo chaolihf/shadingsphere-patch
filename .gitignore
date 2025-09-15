@@ -108,10 +108,9 @@ NOTICE
 /kernel/authority/distsql/pom.xml
 /kernel/authority/distsql/parser/pom.xml
 /kernel/authority/distsql/statement/pom.xml
-/kernel/authority/core/**/*SQLExecutionChecker
+/kernel/authority/core/**/services/
 /kernel/authority/core/**/*Auth*.java
 /kernel/authority/core/**/DefaultUser.java
-/kernel/authority/core/**/*DefaultGlobalRuleConfigurationBuilder
 /kernel/authority/core/**/YamlUser**
 /kernel/authority/core/pom.xml
 /proxy/bootstrap

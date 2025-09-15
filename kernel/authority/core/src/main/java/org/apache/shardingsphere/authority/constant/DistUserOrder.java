@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.rule.builder;
+package org.apache.shardingsphere.authority.constant;
 
-import org.apache.shardingsphere.authority.config.UserConfiguration;
-import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * 默认用户规则配置构建器
+ * 分布式用户次序
  */
-public final class DefaultDistUserRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<UserConfiguration, DistUserRuleBuilder> {
-    
-    @Override
-    public UserConfiguration build() {
-        return new UserConfiguration(null,null,null,null,false);
-    }
-    
-    @Override
-    public int getOrder() {
-        return 6000;
-    }
-    
-    @Override
-    public Class<DistUserRuleBuilder> getTypeClass() {
-        return DistUserRuleBuilder.class;
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DistUserOrder {
+   
+    public static final int ORDER = 6000;
 }

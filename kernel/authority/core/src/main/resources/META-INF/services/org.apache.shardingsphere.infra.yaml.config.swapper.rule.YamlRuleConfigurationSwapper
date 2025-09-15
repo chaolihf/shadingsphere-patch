@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.authority.yaml.swapper.YamlAuthorityRuleConfigurationSwapper
-org.apache.shardingsphere.authority.yaml.swapper.YamlDistUserRuleConfigurationSwapper

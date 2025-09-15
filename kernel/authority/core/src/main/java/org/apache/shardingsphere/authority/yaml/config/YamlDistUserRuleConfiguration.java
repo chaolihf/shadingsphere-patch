@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.authority.yaml.config;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
@@ -32,7 +35,8 @@ import lombok.Setter;
 @Setter
 public final class YamlDistUserRuleConfiguration implements YamlGlobalRuleConfiguration {
     
-    
+	private Collection<YamlUserConfiguration> users = new LinkedList<>();
+	
     @Override
     public Class<UserConfiguration> getRuleConfigurationType() {
         return UserConfiguration.class;
