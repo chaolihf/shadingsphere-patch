@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.distsql.statement;
+package org.apache.shardingsphere.authority.rule;
 
-import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
+import org.apache.shardingsphere.authority.constant.AuthorityOrder;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 
 /**
- * 创建分布式库用户的规则
+ * 分布式规则
  */
-@RequiredArgsConstructor
-@Getter
-public final class CreateDistUserRuleStatement  extends GlobalRuleDefinitionStatement {
-	
-	public String username;
-	
-	public String password;
+public final class DistUserRule implements GlobalRule {
+    
+    private UserConfiguration ruleConfig;
 
-	public CreateDistUserRuleStatement(String username, String password) {
-		this.username = username;
-		this.password = password;
+	@Override
+    public int getOrder() {
+        return AuthorityOrder.ORDER;
+    }
+
+	@Override
+	public RuleConfiguration getConfiguration() {
+		return ruleConfig;
 	}
 	
+	public DistUserRule(UserConfiguration ruleConfig) {
+		this.ruleConfig = ruleConfig;
+	}
 }

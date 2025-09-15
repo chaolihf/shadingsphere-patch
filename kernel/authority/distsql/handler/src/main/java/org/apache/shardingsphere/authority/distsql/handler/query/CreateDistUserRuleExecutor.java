@@ -17,48 +17,42 @@
 
 package org.apache.shardingsphere.authority.distsql.handler.query;
 
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.distsql.statement.CreateDistUserRuleStatement;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.authority.rule.DistUserRule;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 import lombok.Setter;
 
 /**
- * Show authority rule executor.
+ * 创建分布式用户规则执行器
  */
 @Setter
-public final class CreateDistUserRuleExecutor implements DatabaseRuleCreateExecutor<CreateDistUserRuleStatement, ShardingRule, ShardingRuleConfiguration> {
-    
-    @Override
-    public Class<ShardingRule> getRuleClass() {
-        return ShardingRule.class;
-    }
-    
-    @Override
-    public Class<CreateDistUserRuleStatement> getType() {
-        return CreateDistUserRuleStatement.class;
-    }
+public final class CreateDistUserRuleExecutor implements GlobalRuleDefinitionExecutor<CreateDistUserRuleStatement, DistUserRule>{
 
 	@Override
-	public void checkBeforeUpdate(CreateDistUserRuleStatement sqlStatement) {
+	public void setRule(DistUserRule rule) {
+		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void setDatabase(ShardingSphereDatabase database) {
-		
+	public Class<DistUserRule> getRuleClass() {
+		return DistUserRule.class;
 	}
 
 	@Override
-	public void setRule(ShardingRule rule) {
+	public RuleConfiguration buildToBeAlteredRuleConfiguration(CreateDistUserRuleStatement sqlStatement) {
+		UserConfiguration userInfo=new UserConfiguration(
+				sqlStatement.getUsername(),sqlStatement.getPassword(),null,null,false
+				);
+		return userInfo;
 	}
 
 	@Override
-	public ShardingRuleConfiguration buildToBeCreatedRuleConfiguration(CreateDistUserRuleStatement sqlStatement) {
-		ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-		return result;
+	public Class<CreateDistUserRuleStatement> getType() {
+		return CreateDistUserRuleStatement.class;
 	}
+    
 }

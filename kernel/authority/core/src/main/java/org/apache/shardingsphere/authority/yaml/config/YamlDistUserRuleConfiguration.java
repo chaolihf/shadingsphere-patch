@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.distsql.statement;
+package org.apache.shardingsphere.authority.yaml.config;
 
-import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
+import org.apache.shardingsphere.mode.node.tuple.annotation.RepositoryTupleEntity;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
- * 创建分布式库用户的规则
+ * Authority rule configuration for YAML.
  */
-@RequiredArgsConstructor
+@RepositoryTupleEntity(value = "users", leaf = true)
 @Getter
-public final class CreateDistUserRuleStatement  extends GlobalRuleDefinitionStatement {
-	
-	public String username;
-	
-	public String password;
-
-	public CreateDistUserRuleStatement(String username, String password) {
-		this.username = username;
-		this.password = password;
-	}
-	
+@Setter
+public final class YamlDistUserRuleConfiguration implements YamlGlobalRuleConfiguration {
+    
+    
+    @Override
+    public Class<UserConfiguration> getRuleConfigurationType() {
+        return UserConfiguration.class;
+    }
 }
