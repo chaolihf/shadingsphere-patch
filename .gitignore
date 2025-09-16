@@ -92,7 +92,7 @@ NOTICE
 *.yml
 **/test
 .antlr
-README*.md
+README_ZH.md
 C*.md
 RELEASE*.md
 MA*.md
