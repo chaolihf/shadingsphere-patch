@@ -7,6 +7,6 @@ mode:
         type: JDBC
         props:
             provider: PostgreSQL
-            jdbc_url: jdbc:postgresql://134.64.210.121:5432/zdrz
+            jdbc_url: jdbc:postgresql://127.0.0.1:5432/zdrz
             username: ops_select
-            password: k$A8sTb0
+            password: 
