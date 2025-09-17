@@ -23,14 +23,16 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
@@ -57,19 +59,16 @@ import lombok.SneakyThrows;
  */
 public final class AuthorityRule implements GlobalRule {
     
+	private static final Logger LOGGER = Logger.getLogger(AuthorityRule.class.getName());
+	
     private static final String GLOBAL_CONFIG_FILE = "global.yaml";
-    @Deprecated
-    private static final String COMPATIBLE_GLOBAL_CONFIG_FILE = "server.yaml";
     
     @Getter
     private final AuthorityRuleConfiguration configuration;
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> privileges;
     
-    private static File getGlobalConfigFile(final String path) throws ClassNotFoundException {
-        File result = getResourceFile(String.join("/", path, GLOBAL_CONFIG_FILE));
-        return result.exists() ? result : getResourceFile(String.join("/", path, COMPATIBLE_GLOBAL_CONFIG_FILE));
-    }
+    public static HikariDataSource dataSource ;
     
     @SneakyThrows(URISyntaxException.class)
     private static File getResourceFile(final String path) throws ClassNotFoundException {
@@ -77,12 +76,43 @@ public final class AuthorityRule implements GlobalRule {
         return null == url ? new File(path) : new File(url.toURI().getPath());
     }
     
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	public AuthorityRule(final AuthorityRuleConfiguration ruleConfig) {
+		configuration = ruleConfig;
+		if ("PERSIST_DATABASE_PERMITTED".equals(ruleConfig.getPrivilegeProvider().getType())){
+			if (dataSource==null) {
+	    		initDataSource();
+	    	}
+			privileges=initPrivileges();
+		} else {
+	    	Collection<ShardingSphereUser> users = ruleConfig.getUsers().stream()
+	                .map(each -> new ShardingSphereUser(each.getUsername(), each.getPassword(), each.getHostname(), each.getAuthenticationMethodName(), each.isAdmin())).collect(Collectors.toList());
+	        privileges = users.stream().collect(Collectors.toMap(each -> each,
+	                each -> TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps())
+	                        .build(ruleConfig, each.getGrantee()),
+	                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+		}
+    }
+
+    private Map<ShardingSphereUser, ShardingSpherePrivileges> initPrivileges() {
+    	Map<ShardingSphereUser, ShardingSpherePrivileges> result=new HashMap<>();
+    	try (Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+    		//ShardingSphereUser user=new ShardingSphereUser();
+    		//ShardingSpherePrivileges privileges=new PersistDatabasePrivileges();
+    		//result.put(user, privileges);
+        } catch (SQLException e) {
+        	LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+    	return result;
+	}
+
+
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void initDataSource()  {
     	try {
     		Class configClass=Class.forName("org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration");
-    		YamlConfiguration config = YamlEngine.unmarshal(getGlobalConfigFile("/conf/"),configClass);
-    		
+    		YamlConfiguration config = YamlEngine.unmarshal(getResourceFile(String.join("/", "/conf/", GLOBAL_CONFIG_FILE)),configClass);
 			Field modeField = configClass.getDeclaredField("mode");
 			modeField.setAccessible(true);
 			YamlModeConfiguration modeConfiguration = (YamlModeConfiguration) modeField.get(config);
@@ -92,31 +122,26 @@ public final class AuthorityRule implements GlobalRule {
 			dataSourceConfig.setJdbcUrl(props.getProperty("jdbc_url"));
 	        dataSourceConfig.setUsername(props.getProperty("username"));
 	        dataSourceConfig.setPassword(props.getProperty("password"));
-			HikariDataSource dataSource = new HikariDataSource(dataSourceConfig);
-            Connection connection = dataSource.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("select count(*) from repository");
-            while(!result.next()) {
-            	System.out.println(result.getInt(1)); 
-            }
-            dataSource.close();
-            connection.close();
-			
-    	} catch (ClassNotFoundException | IOException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			dataSource = new HikariDataSource(dataSourceConfig);
+			initPersistUserTable();
+    	} catch (ClassNotFoundException | IOException | NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+    		LOGGER.log(Level.SEVERE,e.getMessage(), e);
 		}
-    			
-    	configuration = ruleConfig;
-        Collection<ShardingSphereUser> users = ruleConfig.getUsers().stream()
-                .map(each -> new ShardingSphereUser(each.getUsername(), each.getPassword(), each.getHostname(), each.getAuthenticationMethodName(), each.isAdmin())).collect(Collectors.toList());
-        privileges = users.stream().collect(Collectors.toMap(each -> each,
-                each -> TypedSPILoader.getService(PrivilegeProvider.class, ruleConfig.getPrivilegeProvider().getType(), ruleConfig.getPrivilegeProvider().getProps())
-                        .build(ruleConfig, each.getGrantee()),
-                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
+	}
 
-    /**
+
+
+	private void initPersistUserTable() {
+		try (Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+    		statement.execute("");
+        } catch (SQLException e) {
+        	LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		}
+		
+	}
+
+	/**
      * Get authenticator type.
      *
      * @param user user
