@@ -119,10 +119,13 @@ MA*.md
 /kernel/authority/distsql/parser/pom.xml
 /kernel/authority/distsql/statement/pom.xml
 /kernel/authority/core/**/services/
-/kernel/authority/core/**/*Auth*.java
 /kernel/authority/core/**/DefaultUser.java
 /kernel/authority/core/**/YamlUser**
-/kernel/authority/core/pom.xml
+/kernel/authority/core/**/authentication/
+/kernel/authority/core/**/authority/checker/
+/kernel/authority/core/**/authority/constant/
+/kernel/authority/core/**/authority/yaml/
+/kernel/authority/core/**/authority/rule/builder
 /kernel/authority/**/org.apache.shardingsphere.authority.distsql.handler.query.ShowAuthorityRuleExecutor
 /proxy/bootstrap
 /proxy/backend

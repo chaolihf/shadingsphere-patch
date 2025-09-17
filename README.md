@@ -10,3 +10,4 @@ mode:
             jdbc_url: jdbc:postgresql://127.0.0.1:5432/zdrz
             username: ops_select
             password: 
+            driverClassName: org.postgresql.Driver
