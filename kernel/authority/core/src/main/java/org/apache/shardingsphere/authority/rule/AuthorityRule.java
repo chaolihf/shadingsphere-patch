@@ -97,6 +97,7 @@ public final class AuthorityRule implements GlobalRule {
     	Map<ShardingSphereUser, ShardingSpherePrivileges> result=new HashMap<>();
     	try (Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
+    		statement.executeQuery("select * from users where state=1");
     		//ShardingSphereUser user=new ShardingSphereUser();
     		//ShardingSpherePrivileges privileges=new PersistDatabasePrivileges();
     		//result.put(user, privileges);
