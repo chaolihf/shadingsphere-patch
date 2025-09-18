@@ -61,6 +61,8 @@ import lombok.SneakyThrows;
  */
 public final class AuthorityRule implements GlobalRule {
     
+	public static final String PERSIST_DATABASE_PERMITTED = "PERSIST_DATABASE_PERMITTED";
+
 	private static final Logger LOGGER = Logger.getLogger(AuthorityRule.class.getName());
 	
     private static final String GLOBAL_CONFIG_FILE = "global.yaml";
@@ -70,7 +72,15 @@ public final class AuthorityRule implements GlobalRule {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> privileges;
     
-    public static HikariDataSource dataSource ;
+    private static HikariDataSource dataSource ;
+    
+    public static Connection getConnection() throws SQLException {
+    	if (dataSource==null) {
+    		return null;
+    	} else {
+    		return dataSource.getConnection();
+    	}
+    }
     
     @SneakyThrows(URISyntaxException.class)
     private static File getResourceFile(final String path) throws ClassNotFoundException {
@@ -80,7 +90,7 @@ public final class AuthorityRule implements GlobalRule {
     
 	public AuthorityRule(final AuthorityRuleConfiguration ruleConfig) {
 		configuration = ruleConfig;
-		if ("PERSIST_DATABASE_PERMITTED".equals(ruleConfig.getPrivilegeProvider().getType())){
+		if (PERSIST_DATABASE_PERMITTED.equals(ruleConfig.getPrivilegeProvider().getType())){
 			if (dataSource==null) {
 	    		initDataSource();
 	    	}

@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.authority.distsql.handler.query;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.config.UserConfiguration;
@@ -35,6 +41,8 @@ import lombok.Setter;
 @Setter
 public final class CreateDistUserRuleExecutor implements GlobalRuleDefinitionExecutor<CreateDistUserRuleStatement, AuthorityRule>{
 
+	private static final Logger LOGGER = Logger.getLogger(CreateDistUserRuleExecutor.class.getName());
+	
 	private AuthorityRule rule;
 
 	@Override
@@ -49,14 +57,53 @@ public final class CreateDistUserRuleExecutor implements GlobalRuleDefinitionExe
 
 	@Override
 	public RuleConfiguration buildToBeAlteredRuleConfiguration(CreateDistUserRuleStatement sqlStatement) {
+		AuthorityRuleConfiguration config=null;
 		AuthorityRuleConfiguration currentConfig = rule.getConfiguration();
-		List<UserConfiguration> currentUsers = new ArrayList<>(currentConfig.getUsers());
-		currentUsers.add(new UserConfiguration(sqlStatement.getUsername(),sqlStatement.getPassword(),"","",false));
-		AuthorityRuleConfiguration config=new AuthorityRuleConfiguration(
-				currentUsers,currentConfig.getPrivilegeProvider(),
-					currentConfig.getAuthenticators(),currentConfig.getDefaultAuthenticator()
-				);
+		if (currentConfig.getPrivilegeProvider().getType().equals(AuthorityRule.PERSIST_DATABASE_PERMITTED)) {
+			try(Connection dbConnection=AuthorityRule.getConnection()) {
+				saveUserInfo(dbConnection,sqlStatement);
+			} catch (SQLException e) {
+				LOGGER.log(Level.SEVERE,e.getMessage(),e);
+				throw new RuntimeException(e);
+			}
+			
+			config=new AuthorityRuleConfiguration(
+					currentConfig.getUsers(),currentConfig.getPrivilegeProvider(),
+						currentConfig.getAuthenticators(),currentConfig.getDefaultAuthenticator());
+		} else {
+			List<UserConfiguration> currentUsers = new ArrayList<>(currentConfig.getUsers());
+			currentUsers.add(new UserConfiguration(sqlStatement.getUsername(),sqlStatement.getPassword(),"","",false));
+			config=new AuthorityRuleConfiguration(
+					currentUsers,currentConfig.getPrivilegeProvider(),
+						currentConfig.getAuthenticators(),currentConfig.getDefaultAuthenticator()
+					);
+			
+		}
 		return config;
+	}
+
+	private void saveUserInfo(Connection dbConnection, CreateDistUserRuleStatement sqlStatement) throws SQLException {
+		PreparedStatement dbCommand=null;
+		try {
+			dbCommand = dbConnection.prepareStatement("insert into users(username,password,status,admin,updatetime) values(?,?,1,0,now())");
+			dbCommand.setString(1, sqlStatement.getUsername());
+			dbCommand.setString(2, sqlStatement.getPassword());
+			dbCommand.execute();
+			dbCommand = dbConnection.prepareStatement("insert into user_hosts(username,hostname,status,updatetime) values(?,'%',1,now())");
+			dbCommand.setString(1, sqlStatement.getUsername());
+			dbCommand.execute();
+			dbCommand = dbConnection.prepareStatement("insert into user_permits(username,dbname,status,updatetime) values(?,'%',1,now())");
+			dbCommand.setString(1, sqlStatement.getUsername());
+			dbCommand.execute();
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		finally {
+			if (dbCommand!=null) {
+				dbCommand.close();
+			}
+		}
 	}
 
 	@Override

@@ -11,9 +11,11 @@ public class PersistDatabasePrivileges implements ShardingSpherePrivileges {
 	
 	private String userName;
 	
+	private boolean isAllowAll=false;
+	
 	public PersistDatabasePrivileges(String userName, String dbName) {
 		this.userName=userName;
-		allDatabase.add(dbName);
+		addDatabaseName(dbName);
 	}
 
 	public String getUserName() {
@@ -26,11 +28,18 @@ public class PersistDatabasePrivileges implements ShardingSpherePrivileges {
 
 	@Override
 	public boolean hasPrivileges(String database) {
+		if (isAllowAll) {
+			return true;
+		}
 		return allDatabase.contains(database.toLowerCase());
 	}
 
 	public void addDatabaseName(String dbName) {
-		allDatabase.add(dbName);
+		if("%".equals(dbName)) {
+			isAllowAll=true;
+		} else {
+			allDatabase.add(dbName);
+		}
 	}
 
 }

@@ -22,3 +22,7 @@ authority:
   privilege:
      type: PERSIST_DATABASE_PERMITTED
 ```
+## 3. 支持通过命令来创建账号
+```
+CREATE DIST USER app_user IDENTIFIED BY app_pwd
+```
