@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.rule.privilege.PersistDatabasePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -95,19 +97,39 @@ public final class AuthorityRule implements GlobalRule {
 
     private Map<ShardingSphereUser, ShardingSpherePrivileges> initPrivileges() {
     	Map<ShardingSphereUser, ShardingSpherePrivileges> result=new HashMap<>();
+    	Map<String,PersistDatabasePrivileges> cachecPermitInfos=new HashMap<>();
     	try (Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-    		statement.executeQuery("select * from users where state=1");
-    		//ShardingSphereUser user=new ShardingSphereUser();
-    		//ShardingSpherePrivileges privileges=new PersistDatabasePrivileges();
-    		//result.put(user, privileges);
+    		ResultSet permitCommand = statement.executeQuery("select a.username,b.dbname from users a,user_permits b where a.status=1 and a.username=b.username and b.status=1  order by a.username,b.dbname");
+    		PersistDatabasePrivileges lastPrivileges=null;
+    		while(permitCommand.next()) {
+    			String userName=permitCommand.getString(1);
+    			String dbName=permitCommand.getString(2);
+    			if (lastPrivileges==null || !lastPrivileges.getUserName().equals(userName)) {
+    				lastPrivileges=new PersistDatabasePrivileges(userName,dbName);
+    				cachecPermitInfos.put(userName, lastPrivileges);
+    			} else {
+    				lastPrivileges.addDatabaseName(dbName);
+    			} 
+    		}
+    		permitCommand.close();
+    		ResultSet userCommand = statement.executeQuery("select a.username,a.password,b.hostname,a.admin from users a,user_hosts b where a.status=1 and a.username=b.username and b.status=1 order by a.username,b.hostname");
+    		lastPrivileges=null;
+    		while(userCommand.next()) {
+    			String userName=userCommand.getString(1);
+    			ShardingSphereUser user=new ShardingSphereUser(userName,userCommand.getString(2),
+    					userCommand.getString(3),null,userCommand.getInt(4)==1);
+    			if (lastPrivileges==null || !lastPrivileges.getUserName().equals(userName)) {
+    				lastPrivileges=cachecPermitInfos.get(userName);
+    			}
+    			result.put(user,lastPrivileges );
+    		}
+    		userCommand.close();
         } catch (SQLException e) {
         	LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
     	return result;
 	}
-
-
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initDataSource()  {
